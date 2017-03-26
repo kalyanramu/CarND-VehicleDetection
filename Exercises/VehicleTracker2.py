@@ -16,8 +16,11 @@ class VehicleTracker2():
 
     def debug_process(self,img,threshold=1,debug=False):
         ystart = 400
-        ystop = 656
-        scale = 1.5
+        
+        ystop = 500
+        scale = 0.75
+        svc_threshold = 0.0
+
         orient = 9
         pix_per_cell= 8
         cell_per_block= 2
@@ -28,7 +31,7 @@ class VehicleTracker2():
         init_img, box_list = find_cars(img, 
                                     ystart, ystop, scale, svc, X_scaler, 
                                     orient, pix_per_cell, cell_per_block, 
-                                    spatial_size, hist_bins)
+                                    spatial_size, hist_bins, svc_threshold)
         heatmap = self.heatmapper.compute_heatmapN(box_list,threshold)
         labels = label(heatmap)
         final_img = draw_labeled_bboxes(np.copy(img), labels)
@@ -37,10 +40,15 @@ class VehicleTracker2():
 
     def process(self,img):
         ystart = 400
+
         ystop1 = 656
-        ystop2 = 500
         scale1 = 1.5
+        svc_threshold1 = 0.0
+        
+        ystop2 = 500
         scale2 = 0.75
+        svc_threshold2 = 0
+
         orient = 9
         pix_per_cell= 8
         cell_per_block= 2
@@ -52,11 +60,11 @@ class VehicleTracker2():
         init_img, box_list1 = find_cars(img, 
                                     ystart, ystop1, scale1, svc, X_scaler, 
                                     orient, pix_per_cell, cell_per_block, 
-                                    spatial_size, hist_bins)
+                                    spatial_size, hist_bins,svc_threshold1)
         init_img, box_list2 = find_cars(img, 
                                     ystart, ystop2, scale2, svc, X_scaler, 
                                     orient, pix_per_cell, cell_per_block, 
-                                    spatial_size, hist_bins)
+                                    spatial_size, hist_bins,svc_threshold2)
         box_list = box_list1 + box_list2
         heatmap = self.heatmapper.compute_heatmapN(box_list,threshold)
         labels = label(heatmap)
@@ -64,7 +72,7 @@ class VehicleTracker2():
 
         return final_img
 
-def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins):
+def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins,svc_decision_threshold):
     
     draw_img = np.copy(img)
     img = img.astype(np.float32)/255.0
@@ -121,7 +129,7 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
             #test_features = X_scaler.transform(np.hstack((shape_feat, hist_feat)).reshape(1, -1))    
             test_prediction = svc.predict(test_features)
             
-            if test_prediction == 1: # and svc.decision_function(test_features) > 0.3: #if car found
+            if test_prediction == 1 and svc.decision_function(test_features) > svc_decision_threshold: #if car found
                 xbox_left = np.int(xleft*scale)
                 ytop_draw = np.int(ytop*scale)
                 win_draw = np.int(window*scale)
