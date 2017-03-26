@@ -15,7 +15,7 @@ class car_classifier:
 		self.feature_scaler = None
 
 		#Read number of histbins from config file
-		self.color_space = 'RGB'
+		self.color_space = 'YCrCb' #'RGB'
 		self.spatial_size = (32,32)
 		self.hist_bins = 32
 		self.orient = 9

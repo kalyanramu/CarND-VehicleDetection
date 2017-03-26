@@ -4,7 +4,8 @@ import numpy as np
 import pickle
 import cv2
 from scipy.ndimage.measurements import label
-
+import collections
+import matplotlib.cm as cm
 
 class HeatMapper():
 	def __init__(self, img_shape):
@@ -17,16 +18,20 @@ class HeatMapper():
 			print('img_shape argument is not a valid tuple, enter valid image shape')
 
 		self.img_shape = img_shape
+		self.thresholded_heatmap = np.zeros(self.img_shape).astype(np.float)
 		self.heatmap = np.zeros(self.img_shape).astype(np.float)
+		self.multi_boxes_list = collections.deque(maxlen=5)
+		self.i = 0
 
 	def add_heat(self, bbox_list):
+		self.heatmap = np.zeros(self.img_shape).astype(np.float)
 		for box in bbox_list:
 			self.heatmap[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1
 		return self.heatmap# Iterate through list of bboxes
 
 	def apply_threshold(self, threshold):
 	    # Zero out pixels below the threshold
-	    self.heatmap[self.heatmap <= threshold] = 0
+	    self.thresholded_heatmap[self.heatmap <= threshold] = 0
 	    # Return thresholded map
 	    return self.heatmap
 
@@ -34,4 +39,24 @@ class HeatMapper():
 			self.heatmap = np.zeros(self.img_shape).astype(np.float)
 			self.add_heat(bbox_list)
 			self.apply_threshold(threshold)
-			return self.heatmap
+			return self.thresholded_heatmap
+
+	def compute_heatmapN(self,bbox_list,threshold=10):
+		self.multi_boxes_list.append(bbox_list)
+		#print("Threshold=", threshold)
+		#print(self.multi_boxes_list)
+
+		self.heatmap.fill(0)
+		j=0
+		
+		for bbox_list in self.multi_boxes_list:
+			for box in bbox_list:
+				self.heatmap[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1
+			j+=1
+		print("len of dq",len(bbox_list))
+		self.thresholded_heatmap[self.heatmap > threshold] = 1
+
+		#print(np.max(self.heatmap))
+		#mpimg.imsave ("./out/frame"+str(self.i)+".jpg",self.heatmap,cmap=cm.gray)
+		self.i+=1
+		return self.thresholded_heatmap

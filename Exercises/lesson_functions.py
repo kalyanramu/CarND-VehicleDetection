@@ -290,3 +290,11 @@ def slide_window2(img_shape, x_start_stop=[None, None], y_start_stop=[None, None
             window_list.append(((startx, starty), (endx, endy)))
     # Return the list of windows
     return window_list
+
+def convert_color(img, conv='RGB2YCrCb'):
+    if conv == 'RGB2YCrCb':
+        return cv2.cvtColor(img, cv2.COLOR_RGB2YCrCb)
+    if conv == 'BGR2YCrCb':
+        return cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
+    if conv == 'RGB2LUV':
+        return cv2.cvtColor(img, cv2.COLOR_RGB2LUV)
