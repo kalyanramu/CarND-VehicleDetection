@@ -20,7 +20,7 @@ class HeatMapper():
 		self.img_shape = img_shape
 		self.thresholded_heatmap = np.zeros(self.img_shape).astype(np.float)
 		self.heatmap = np.zeros(self.img_shape).astype(np.float)
-		self.multi_boxes_list = collections.deque(maxlen=5)
+		self.multi_boxes_list = collections.deque(maxlen=10)
 		self.i = 0
 
 	def add_heat(self, bbox_list):
@@ -47,16 +47,15 @@ class HeatMapper():
 		#print(self.multi_boxes_list)
 
 		self.heatmap.fill(0)
-		j=0
 		
 		for bbox_list in self.multi_boxes_list:
 			for box in bbox_list:
 				self.heatmap[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1
-			j+=1
-		print("len of dq",len(bbox_list))
-		self.thresholded_heatmap[self.heatmap > threshold] = 1
 
-		#print(np.max(self.heatmap))
-		#mpimg.imsave ("./out/frame"+str(self.i)+".jpg",self.heatmap,cmap=cm.gray)
-		self.i+=1
+		#print("len of dq",len(self.multi_boxes_list))
+		self.thresholded_heatmap.fill(0)
+		self.thresholded_heatmap[self.heatmap > threshold] = 1
 		return self.thresholded_heatmap
+
+		#self.heatmap[self.heatmap < threshold] =0
+		#return self.heatmap
