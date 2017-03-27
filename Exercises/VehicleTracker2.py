@@ -17,8 +17,8 @@ class VehicleTracker2():
     def debug_process(self,img,threshold=1,debug=False):
         ystart = 400
         
-        ystop = 500
-        scale = 0.75
+        ystop = 656
+        scale = 1.5
         svc_threshold = 0.0
 
         orient = 9
@@ -125,7 +125,8 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
             hist_features = color_hist(subimg, nbins=hist_bins)
 
             # Scale features and make a prediction
-            test_features = X_scaler.transform(np.hstack((spatial_features, hist_features, hog_features)).reshape(1, -1))    
+            test_features = X_scaler.transform(np.hstack((spatial_features, hist_features, hog_features)).reshape(1, -1)) 
+
             #test_features = X_scaler.transform(np.hstack((shape_feat, hist_feat)).reshape(1, -1))    
             test_prediction = svc.predict(test_features)
             
