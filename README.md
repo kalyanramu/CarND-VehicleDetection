@@ -48,7 +48,7 @@ Below are the settings I used for HOG:
 
 | Raw Image |HOG Image|
 |---|---|
-|![Raw](./cutout1.jpg) | ![HOG](./cutout1_hog.jpg) |
+|![Raw](./output_images/cutout1.jpg) | ![HOG](./output_images/cutout1_hog.jpg) |
 
 
 > For definition of color histogram check  <b>`lesson_functions.py >>get_hog_features function`</b> (lines 34-42)
@@ -91,11 +91,11 @@ Detecting the image and defining whether it is a car or not is a classical machi
 ## Frame segmentation
 I use a sliding window approach described in the udacity course which allowed for different scaling, overlap. Different scaling is useful because we can approximate vehicle size we expect in different frame regions, which makes searching a bit easier.I have used scaling of 0.75 and 1.5 for the processing pipeline with different end point. Below we can see picture of sliding windows acroos each image, where sub-image in each box is classified to "car" or "non-car" using Support Vector Classifier trained earlier.
 
-<img src = './window_search64.png'>
+<img src = './output_images/window_search64.png'>
 
 Since frame segments must be of various size, and we eventually need to use 64×64 regions as a classifier input, I decided to simply scale the frame to various sizes and then scan them with a 64×64 window. Image below shows output of searching each window (scale = 1.5), detecting car and plotting it back onto image. It can observed that there are multiple blue surrounding each car. We will discuss in next section as how to merge the boxes surrounding each car to single object box.
 
-<img src = './single_img_detect.png'>
+<img src = './output_images/single_img_detect.png'>
 > For implementation details check <b>`vehicletracker.py >> VehicleTracker class >> find_cars function` </b>(lines 107-143)
 
 
@@ -110,7 +110,7 @@ After merging heatmaps from multiple scales and multiple frames, we threshold th
 
 | Raw Heatmap |Thresholded Heatmap|
 |---|---|
-|![Raw heatmap](./raw_heatmap.png) | ![Thresholded Heatmap](./thresholded_heatmap.png) |
+|![Raw heatmap](./output_images/raw_heatmap.png) | ![Thresholded Heatmap](./output_images/thresholded_heatmap.png) |
 
 > For implementation details check <b>`HeatMapper.py >> HeatMapper Class >> computeHeatMapN' function`</b> (lines 44-58)
 
